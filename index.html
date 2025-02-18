@@ -1,102 +1,158 @@
-import { useState, useRef } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import html2canvas from "html2canvas";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 10px;
+            width: 320px;
+            text-align: center;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #000;
+            color: white;
+            cursor: pointer;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background: #ccc;
+            margin: 10px 0;
+        }
+        .flex-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <input id="quantity" type="number" placeholder="จำนวนสินค้า">
+        <input id="name" type="text" placeholder="ชื่อสินค้า">
+        <input id="price" type="number" placeholder="ราคาสินค้า">
+        <br>
+        <button onclick="addItem()">เพิ่มสินค้า</button>
+    </div>
 
-export default function ProductCalculator() {
-  const [items, setItems] = useState([]);
-  const [quantity, setQuantity] = useState("");
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
-  const [total, setTotal] = useState(0);
-  const [deleteIndex, setDeleteIndex] = useState("");
-  const receiptRef = useRef(null);
-
-  const specialFont = (text) => {
-    const mapping = {
-      "0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿",
-      "a": "𝚊", "b": "𝚋", "c": "𝚌", "d": "𝚍", "e": "𝚎", "f": "𝚏", "g": "𝚐", "h": "𝚑", "i": "𝚒", "j": "𝚓", "k": "𝚔", "l": "𝚕", "m": "𝚖",
-      "n": "𝚗", "o": "𝚘", "p": "𝚙", "q": "𝚚", "r": "𝚛", "s": "𝚜", "t": "𝚝", "u": "𝚞", "v": "𝚟", "w": "𝚠", "x": "𝚡", "y": "𝚢", "z": "𝚣"
-    };
-    return text.split('').map(char => mapping[char.toLowerCase()] || char).join('');
-  };
-
-  const addItem = () => {
-    if (quantity && name && price) {
-      const newItem = { quantity: parseInt(quantity), name: specialFont(name), price: parseFloat(price) };
-      setItems([...items, newItem]);
-      setTotal(total + newItem.price * newItem.quantity);
-      setQuantity("");
-      setName("");
-      setPrice("");
-    }
-  };
-
-  const removeItem = () => {
-    const index = parseInt(deleteIndex) - 1;
-    if (index >= 0 && index < items.length) {
-      const newItems = items.filter((_, i) => i !== index);
-      setTotal(newItems.reduce((sum, item) => sum + item.price * item.quantity, 0));
-      setItems(newItems);
-    }
-    setDeleteIndex("");
-  };
-
-  const saveReceipt = () => {
-    html2canvas(receiptRef.current).then((canvas) => {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = "receipt.png";
-      link.click();
-    });
-  };
-
-  return (
-    <div className="flex flex-col items-center p-4 space-y-4">
-      <Card className="w-full max-w-md p-4">
-        <CardContent>
-          <div className="space-y-2">
-            <Input placeholder="จำนวนสินค้า" type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
-            <Input placeholder="ชื่อสินค้า" value={name} onChange={(e) => setName(e.target.value)} />
-            <Input placeholder="ราคาสินค้า" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
-            <Button onClick={addItem} className="w-full">เพิ่มสินค้า</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="w-full max-w-md p-4" ref={receiptRef}>
-        <CardContent>
-          <h2 className="text-center text-xl font-bold">kbank</h2>
-          <p className="text-center">171-1-48625-5</p>
-          <div className="flex justify-between font-semibold mt-4">
+    <div class="card" id="receipt">
+        <h2>kbank</h2>
+        <p>171-1-48625-5</p>
+        <hr>
+        <div class="flex-row">
             <span>Item</span>
             <span>Price</span>
-          </div>
-          <hr />
-          {items.map((item, index) => (
-            <div key={index} className="flex justify-between">
-              <span>{specialFont((index + 1).toString())}. {specialFont(item.quantity.toString())}x {item.name}</span>
-              <span>{specialFont((item.price * item.quantity).toFixed(2))}</span>
-            </div>
-          ))}
-          <hr />
-          <div className="flex justify-between font-bold">
+        </div>
+        <div id="items-list"></div>
+        <hr>
+        <div class="flex-row">
             <span>t o t a l</span>
-            <span>฿{specialFont(total.toFixed(2))}</span>
-          </div>
-          <hr />
-          <p className="text-center mt-2">ㅤโอนแล้วส่งสลิป + อีเมล ได้เลยนะคะ</p>
-        </CardContent>
-      </Card>
-      <div className="flex space-x-2">
-        <Button onClick={saveReceipt} className="w-full">บันทึกเป็นรูป</Button>
-        <Button onClick={() => setItems([])} className="w-full">ลบทั้งหมด</Button>
-      </div>
-      <div className="flex space-x-2 mt-4">
-        <Input placeholder="ใส่เลขสินค้าเพื่อลบ" type="number" value={deleteIndex} onChange={(e) => setDeleteIndex(e.target.value)} />
-        <Button onClick={removeItem} className="w-full">ลบสินค้า</Button>
-      </div>
+            <span id="total">฿0.00</span>
+        </div>
+        <hr>
+        <p>โอนแล้วส่งสลิป + อีเมล ได้เลยนะคะ</p>
     </div>
-  );
-}
+
+    <div class="button-group">
+        <button onclick="saveReceipt()">บันทึกเป็นรูป</button>
+        <button onclick="clearItems()">ลบทั้งหมด</button>
+    </div>
+
+    <div class="input-button-group">
+        <input id="deleteIndex" type="number" placeholder="ใส่เลขสินค้าเพื่อลบ">
+        <button onclick="removeItem()">ลบสินค้า</button>
+    </div>
+
+    <script>
+        let items = [];
+        let total = 0;
+
+        function specialFont(text) {
+            const mapping = {"0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿"};
+            return text.split('').map(char => mapping[char] || char).join('');
+        }
+
+        function addItem() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const name = document.getElementById('name').value;
+            const price = parseFloat(document.getElementById('price').value);
+            if (quantity && name && price) {
+                items.push({ quantity, name: specialFont(name), price });
+                total += price * quantity;
+                updateReceipt();
+                document.getElementById('quantity').value = "";
+                document.getElementById('name').value = "";
+                document.getElementById('price').value = "";
+            }
+        }
+
+        function removeItem() {
+            const index = parseInt(document.getElementById('deleteIndex').value) - 1;
+            if (!isNaN(index) && index >= 0 && index < items.length) {
+                total -= items[index].price * items[index].quantity;
+                items.splice(index, 1);
+                updateReceipt();
+            }
+        }
+
+        function clearItems() {
+            items = [];
+            total = 0;
+            updateReceipt();
+        }
+
+        function updateReceipt() {
+            const list = document.getElementById('items-list');
+            list.innerHTML = "";
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "flex-row";
+                div.innerHTML = `<span>${specialFont((index + 1).toString())}. ${specialFont(item.quantity.toString())}x ${item.name}</span><span>${specialFont((item.price * item.quantity).toFixed(2))}</span>`;
+                list.appendChild(div);
+            });
+            document.getElementById('total').innerText = `฿${specialFont(total.toFixed(2))}`;
+        }
+
+        function saveReceipt() {
+            html2canvas(document.getElementById('receipt')).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL("image/png");
+                link.download = "receipt.png";
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
