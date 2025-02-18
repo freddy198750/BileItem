@@ -70,8 +70,7 @@
     <div class="card" id="receipt">
         <h2>kbank</h2>
         <p>171-1-48625-5</p>
-        <hr>
-        <div class="flex-row">
+        <div class="flex-row" style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">
             <span>Item</span>
             <span>Price</span>
         </div>
@@ -79,7 +78,7 @@
         <hr>
         <div class="flex-row">
             <span>t o t a l</span>
-            <span id="total">฿0.00</span>
+            <span id="total">O.OO</span>
         </div>
         <hr>
         <p>โอนแล้วส่งสลิป + อีเมล ได้เลยนะคะ</p>
@@ -100,8 +99,12 @@
         let total = 0;
 
         function specialFont(text) {
-            const mapping = {"0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿"};
-            return text.split('').map(char => mapping[char] || char).join('');
+            const mapping = {
+                "0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿",
+                "a": "𝚊", "b": "𝚋", "c": "𝚌", "d": "𝚍", "e": "𝚎", "f": "𝚏", "g": "𝚐", "h": "𝚑", "i": "𝚒", "j": "𝚓", "k": "𝚔", "l": "𝚕", "m": "𝚖",
+                "n": "𝚗", "o": "𝚘", "p": "𝚙", "q": "𝚚", "r": "𝚛", "s": "𝚜", "t": "𝚝", "u": "𝚞", "v": "𝚟", "w": "𝚠", "x": "𝚡", "y": "𝚢", "z": "𝚣"
+            };
+            return text.split('').map(char => mapping[char.toLowerCase()] || char).join('');
         }
 
         function addItem() {
@@ -124,6 +127,7 @@
                 total -= items[index].price * items[index].quantity;
                 items.splice(index, 1);
                 updateReceipt();
+                document.getElementById('deleteIndex').value = "";
             }
         }
 
@@ -131,18 +135,6 @@
             items = [];
             total = 0;
             updateReceipt();
-        }
-
-        function updateReceipt() {
-            const list = document.getElementById('items-list');
-            list.innerHTML = "";
-            items.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = "flex-row";
-                div.innerHTML = `<span>${specialFont((index + 1).toString())}. ${specialFont(item.quantity.toString())}x ${item.name}</span><span>${specialFont((item.price * item.quantity).toFixed(2))}</span>`;
-                list.appendChild(div);
-            });
-            document.getElementById('total').innerText = `฿${specialFont(total.toFixed(2))}`;
         }
 
         function saveReceipt() {
