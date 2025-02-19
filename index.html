@@ -138,9 +138,9 @@
     }
     
     function saveReceipt() {
-      const receipt = document.getElementById('receipt');
-        html2canvas(receipt).then(canvas => {
-          const link = document.createElement('a');
+            const receipt = document.getElementById('receipt');
+            html2canvas(receipt, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
                 link.href = canvas.toDataURL('image/png');
                 link.download = 'receipt.png';
                 link.click();
