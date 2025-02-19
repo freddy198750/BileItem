@@ -68,8 +68,7 @@
     </div>
 
     <div class="card" id="receipt">
-        <h2>kbank</h2>
-        <p>171-1-48625-5</p>
+        <h2>Mitty matsu</h2>
         <div class="flex-row" style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">
             <span>Item</span>
             <span>Price</span>
@@ -82,6 +81,12 @@
         </div>
         <hr>
         <p>โอนแล้วส่งสลิป + อีเมล ได้เลยนะคะ</p>
+        <p>สุวภัตร ชูชาติไพศาล</p>
+        <p>K bank</p>
+        <p>171-1-48625-5</p>
+        <div id="qr-code">
+          <img src="qr-code.jpg" alt="QR Code" width="150" height="150">
+        </div>
     </div>
 
     <div class="button-group">
@@ -134,7 +139,7 @@
                              <span>${specialFont((item.price * item.quantity).toFixed(2))}</span>`;
             list.appendChild(div);
         });
-        document.getElementById('total').innerText = `฿${specialFont(total.toFixed(2))}`;
+        document.getElementById('total').innerText = `฿${total.toFixed(2)}`;
     }
     
     function saveReceipt() {
