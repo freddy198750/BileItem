@@ -95,56 +95,75 @@
     </div>
 
     <script>
-        let items = [];
-        let total = 0;
+    let items = [];
+    let total = 0;
 
-        function specialFont(text) {
-            const mapping = {
-                "0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿",
-                "a": "𝚊", "b": "𝚋", "c": "𝚌", "d": "𝚍", "e": "𝚎", "f": "𝚏", "g": "𝚐", "h": "𝚑", "i": "𝚒", "j": "𝚓", "k": "𝚔", "l": "𝚕", "m": "𝚖",
-                "n": "𝚗", "o": "𝚘", "p": "𝚙", "q": "𝚚", "r": "𝚛", "s": "𝚜", "t": "𝚝", "u": "𝚞", "v": "𝚟", "w": "𝚠", "x": "𝚡", "y": "𝚢", "z": "𝚣"
-            };
-            return text.split('').map(char => mapping[char.toLowerCase()] || char).join('');
-        }
+    function specialFont(text) {
+        const mapping = {
+            "0": "O", "1": "𝟷", "2": "𝟸", "3": "𝟹", "4": "𝟺", "5": "𝟻", "6": "𝟼", "7": "𝟽", "8": "𝟾", "9": "𝟿",
+            "a": "𝚊", "b": "𝚋", "c": "𝚌", "d": "𝚍", "e": "𝚎", "f": "𝚏", "g": "𝚐", "h": "𝚑", "i": "𝚒", "j": "𝚓", "k": "𝚔", "l": "𝚕", "m": "𝚖",
+            "n": "𝚗", "o": "𝚘", "p": "𝚙", "q": "𝚚", "r": "𝚛", "s": "𝚜", "t": "𝚝", "u": "𝚞", "v": "𝚟", "w": "𝚠", "x": "𝚡", "y": "𝚢", "z": "𝚣"
+        };
+        return text.split('').map(char => mapping[char.toLowerCase()] || char).join('');
+    }
 
-        function addItem() {
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const name = document.getElementById('name').value;
-            const price = parseFloat(document.getElementById('price').value);
-            if (quantity && name && price) {
-                items.push({ quantity, name: specialFont(name), price });
-                total += price * quantity;
-                updateReceipt();
-                document.getElementById('quantity').value = "";
-                document.getElementById('name').value = "";
-                document.getElementById('price').value = "";
-            }
-        }
-
-        function removeItem() {
-            const index = parseInt(document.getElementById('deleteIndex').value) - 1;
-            if (!isNaN(index) && index >= 0 && index < items.length) {
-                total -= items[index].price * items[index].quantity;
-                items.splice(index, 1);
-                updateReceipt();
-                document.getElementById('deleteIndex').value = "";
-            }
-        }
-
-        function clearItems() {
-            items = [];
-            total = 0;
+    function addItem() {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const name = document.getElementById('name').value.trim();
+        const price = parseFloat(document.getElementById('price').value);
+        
+        if (!isNaN(quantity) && name !== "" && !isNaN(price)) {
+            items.push({ quantity, name: specialFont(name), price });
+            total += price * quantity;
             updateReceipt();
+            document.getElementById('quantity').value = "";
+            document.getElementById('name').value = "";
+            document.getElementById('price').value = "";
+        } else {
+            alert("กรุณากรอกข้อมูลให้ครบถ้วน");
         }
+    }
 
-        function saveReceipt() {
-            html2canvas(document.getElementById('receipt')).then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL("image/png");
-                link.download = "receipt.png";
+    function updateReceipt() {
+        const list = document.getElementById('items-list');
+        list.innerHTML = "";
+        items.forEach((item, index) => {
+            const div = document.createElement('div');
+            div.className = "flex-row";
+            div.innerHTML = `<span>${specialFont((index + 1).toString())}. ${specialFont(item.quantity.toString())}x ${item.name}</span>
+                             <span>${specialFont((item.price * item.quantity).toFixed(2))}</span>`;
+            list.appendChild(div);
+        });
+        document.getElementById('total').innerText = `฿${specialFont(total.toFixed(2))}`;
+    }
+    
+    function saveReceipt() {
+      const receipt = document.getElementById('receipt');
+        html2canvas(receipt).then(canvas => {
+          const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'receipt.png';
                 link.click();
-            });
+        });
+      }
+
+    function removeItem() {
+        const index = parseInt(document.getElementById('deleteIndex').value);
+        if (!isNaN(index) && index > 0 && index <= items.length) {
+            total -= items[index - 1].price * items[index - 1].quantity;
+            items.splice(index - 1, 1);
+            updateReceipt();
+            document.getElementById('deleteIndex').value = "";
+        } else {
+            alert("กรุณาใส่หมายเลขสินค้าที่ถูกต้อง");
         }
-    </script>
+    }
+
+    function clearItems() {
+        items = [];
+        total = 0;
+        updateReceipt();
+    }
+  </script>
 </body>
 </html>
